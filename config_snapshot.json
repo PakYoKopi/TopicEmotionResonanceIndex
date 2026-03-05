@@ -1,0 +1,180 @@
+{
+  "RUN_DIR": "/content/drive/MyDrive/TERI/Output/teri_runs/20260211_150203_aed0fd",
+  "INPUT_ROOT": "/content/drive/MyDrive/TERI/Dataset",
+  "WORK_ROOT": "/content/drive/MyDrive/TERI/Output/teri_runs",
+  "CANDIDATES_INDO_PATH": "/content/drive/MyDrive/TERI/Dataset/Indonesian Politics/top_videos_candidate_indonesia.csv",
+  "CANDIDATES_GLOBAL_PATH": "/content/drive/MyDrive/TERI/Dataset/Global Politics/top_videos_candidate_global.csv",
+  "TRANSCRIPTS_DIR_INDO": "/content/drive/MyDrive/TERI/Dataset/Indonesian Politics/Transcript",
+  "TRANSCRIPTS_DIR_GLOBAL": "/content/drive/MyDrive/TERI/Dataset/Global Politics/Transcript",
+  "COMMENTS_DIR_INDO": "/content/drive/MyDrive/TERI/Dataset/Indonesian Politics/Comment",
+  "COMMENTS_DIR_GLOBAL": "/content/drive/MyDrive/TERI/Dataset/Global Politics/Comment",
+  "OUT_DIR": "/content/drive/MyDrive/TERI/Output/teri_runs/20260216_034627_7f7950/outputs",
+  "CACHE_DIR": "/content/drive/MyDrive/TERI/Output/teri_runs/20260216_034627_7f7950/cache",
+  "SEED": 42,
+  "TOPIC_PREC_TARGET": 0.9,
+  "SIM_PREC_TARGET": 0.85,
+  "SIM_THRESHOLD_INIT": 0.35,
+  "TRANSCRIPT_MIN_TOKENS": 80,
+  "TRANSCRIPT_MIN_SEGMENTS": 5,
+  "CHUNK_TOK_TARGET": 180,
+  "CHUNK_TOK_RANGE": [
+    120,
+    220
+  ],
+  "TOX_RATE_THRESHOLD": 0.6,
+  "MAX_LEN": 512,
+  "CHAR_LIMIT": 4000,
+  "BATCH_SIZE": 32,
+  "NUM_WORKERS": 2,
+  "POLICY": {
+    "KEEP_LANG_OTHER": true,
+    "ROUTE_PER_ITEM": true,
+    "TOX_LABEL_INSPECTION_REQUIRED": true,
+    "STANDARDIZE_BEFORE_COMPOSITE": true
+  },
+  "MODELS": {
+    "SIM_MODEL_ID": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "SENT_ID_MODEL_ID": "w11wo/indonesian-roberta-base-sentiment-classifier",
+    "SENT_EN_MODEL_ID": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+    "SENT_MUL_MODEL_ID": "cardiffnlp/twitter-xlm-roberta-base-sentiment",
+    "EMO_ID_MODEL_ID": "StevenLimcorn/indonesian-roberta-base-emotion-classifier",
+    "EMO_EN_MODEL_ID": "j-hartmann/emotion-english-distilroberta-base",
+    "EMO_MUL_MODEL_ID": "AnasAlokla/multilingual_go_emotions_V1.1",
+    "TOX_EN_MODEL_ID": "unitary/unbiased-toxic-roberta",
+    "TOX_MUL_MODEL_ID": "unitary/multilingual-toxic-xlm-roberta"
+  },
+  "HF_REVISIONS": {
+    "SIM_MODEL_ID": null,
+    "SENT_ID_MODEL_ID": null,
+    "SENT_EN_MODEL_ID": null,
+    "SENT_MUL_MODEL_ID": null,
+    "EMO_ID_MODEL_ID": null,
+    "EMO_EN_MODEL_ID": null,
+    "EMO_MUL_MODEL_ID": null,
+    "TOX_EN_MODEL_ID": null,
+    "TOX_MUL_MODEL_ID": null
+  },
+  "SELECTION": {
+    "TARGET_PER_DOMAIN": {
+      "indo": 200,
+      "global": 200
+    },
+    "COMMENT_TIERS": 3,
+    "YEAR_BINS": "auto",
+    "MANUAL_VIDEOIDS": {
+      "indo": [],
+      "global": []
+    },
+    "SEED": 42
+  },
+  "TOPIC_CAL": {
+    "N_PER_DOMAIN": 150,
+    "STRATA_COLS": [
+      "year_bin",
+      "comment_tier"
+    ],
+    "SEED": 42
+  },
+  "TRANSCRIPT_QC": {
+    "MIN_TOKENS": 80,
+    "MIN_SEGMENTS": 5,
+    "MIN_ALPHA_RATIO": 0.45,
+    "MAX_REPEAT_TOKEN_RATIO": 0.35
+  },
+  "COMMENTS": {
+    "CAP_PER_VIDEO": 5000,
+    "MIN_PER_VIDEO": 50,
+    "SAMPLE_MODE": "time_stratified",
+    "TIME_BINS": 4,
+    "SEED": 42,
+    "KEEP_REPLIES": true,
+    "KEEP_LANG_OTHER": true
+  },
+  "ALIGN": {
+    "MODEL_ID": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "BATCH_SIZE": 128,
+    "EMB_DTYPE": "float16",
+    "CENTER_EMB": true,
+    "L2_NORMALIZE": true,
+    "TOPK": 2,
+    "MARGIN_FEATURE": true,
+    "CAL_N_PER_DOMAIN": 200,
+    "CAL_SEED": 42,
+    "CAL_SCORE_QBINS": 4
+  },
+  "ALIGN_CAL": {
+    "PREC_TARGET": 0.85,
+    "GRID_Q": 41,
+    "USE_MARGIN": true,
+    "MIN_LABELED": 120,
+    "MIN_ALIGNED_PER_VIDEO": 50,
+    "MIN_ALIGNED_RATIO_PER_VIDEO": 0.03
+  },
+  "INFER": {
+    "BATCH_SIZE": 64,
+    "MAX_LENGTH": 192,
+    "LONG_TEXT_MODE": "head_tail",
+    "HEAD_TAIL_CHARS": 320,
+    "FORCE_RECOMPUTE": false
+  },
+  "AFFECT_QC": {
+    "MIN_SCORED_OK_PER_VIDEO": 50,
+    "MIN_OK_RATIO_PER_VIDEO": 0.9
+  },
+  "SARC": {
+    "WEIGHT_IF_FLAGGED": 0.5
+  },
+  "TERI": {
+    "NORM_METHOD": "robust_z",
+    "NORM_SCOPE": "within_domain",
+    "AGG_MODE": "mean_p90",
+    "WEIGHTS": {
+      "tox": 0.4,
+      "conflict": 0.35,
+      "coupling": 0.25
+    },
+    "TOP_FRAC": 0.1
+  },
+  "OR": {
+    "ANCHOR_MAX_DF_SHARE": 0.2,
+    "ANCHOR_MIN_LEN": 3,
+    "LOW_SIM_Q": 0.3,
+    "HIGH_CONFLICT_Q": 0.8,
+    "REQUIRE_ANCHOR": true,
+    "WEIGHT_CONFLICT": 0.7,
+    "WEIGHT_TOX": 0.3,
+    "MIN_OR_COMMENTS": 100,
+    "CLIP_Z": 4.0,
+    "SHRINK_K": 200,
+    "LAMBDA": 0.3,
+    "SATURATE": true
+  },
+  "CIB": {
+    "MIN_TMPL_LEN": 3,
+    "MIN_COMMENTS": 200,
+    "DUP_TEMPL_RATE_HI": 0.15,
+    "AUTHOR_TOP1_HI": 0.05,
+    "AUTHOR_GINI_HI": 0.55,
+    "BURST_RATIO_HI": 6.0,
+    "CROSSVID_AUTHOR_HI": 10,
+    "ALPHA": 1.6,
+    "MIN_W": 0.2,
+    "DUP_K": 5.0,
+    "AUTH_K": 8.0,
+    "BURST_K": 4.0,
+    "USE_BURST": true,
+    "VIDEO_GAMMA": 1.0,
+    "SUS_DUP_THR": 0.75,
+    "SUS_AUTH_THR": 0.6
+  },
+  "DEBOT": {
+    "AGG_MODE": "mean_p90",
+    "NORM_METHOD": "robust_z",
+    "NORM_SCOPE": "within_domain",
+    "WEIGHTS": {
+      "tox": 0.4,
+      "conflict": 0.35,
+      "coupling": 0.25
+    }
+  }
+}
