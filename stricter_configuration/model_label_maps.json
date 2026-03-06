@@ -1,0 +1,124 @@
+{
+  "cardiffnlp/twitter-xlm-roberta-base-sentiment": {
+    "sent_map": {
+      "negative": "neg",
+      "neutral": "neu",
+      "positive": "pos"
+    },
+    "tox_pos_labels": [],
+    "emo_neutral_label": "neutral"
+  },
+  "AnasAlokla/multilingual_go_emotions_V1.1": {
+    "sent_map": {
+      "admiration": "other",
+      "amusement": "other",
+      "anger": "other",
+      "annoyance": "other",
+      "approval": "other",
+      "caring": "other",
+      "confusion": "other",
+      "curiosity": "other",
+      "desire": "other",
+      "disappointment": "other",
+      "disapproval": "other",
+      "disgust": "other",
+      "embarrassment": "other",
+      "excitement": "other",
+      "fear": "other",
+      "gratitude": "other",
+      "grief": "other",
+      "joy": "other",
+      "love": "other",
+      "nervousness": "other",
+      "optimism": "other",
+      "pride": "other",
+      "realization": "other",
+      "relief": "other",
+      "remorse": "other",
+      "sadness": "other",
+      "surprise": "other",
+      "neutral": "neu"
+    },
+    "tox_pos_labels": [],
+    "emo_neutral_label": "neutral"
+  },
+  "j-hartmann/emotion-english-distilroberta-base": {
+    "sent_map": {
+      "anger": "other",
+      "disgust": "other",
+      "fear": "other",
+      "joy": "other",
+      "neutral": "neu",
+      "sadness": "other",
+      "surprise": "other"
+    },
+    "tox_pos_labels": [],
+    "emo_neutral_label": "neutral"
+  },
+  "unitary/multilingual-toxic-xlm-roberta": {
+    "sent_map": {
+      "toxic": "other"
+    },
+    "tox_pos_labels": [
+      "toxic"
+    ],
+    "emo_neutral_label": null
+  },
+  "unitary/unbiased-toxic-roberta": {
+    "sent_map": {
+      "toxicity": "other",
+      "severe_toxicity": "other",
+      "obscene": "other",
+      "identity_attack": "other",
+      "insult": "other",
+      "threat": "other",
+      "sexual_explicit": "other",
+      "male": "other",
+      "female": "other",
+      "homosexual_gay_or_lesbian": "other",
+      "christian": "other",
+      "jewish": "other",
+      "muslim": "other",
+      "black": "other",
+      "white": "other",
+      "psychiatric_or_mental_illness": "other"
+    },
+    "tox_pos_labels": [
+      "toxicity",
+      "severe_toxicity",
+      "obscene",
+      "insult",
+      "threat"
+    ],
+    "emo_neutral_label": null
+  },
+  "w11wo/indonesian-roberta-base-sentiment-classifier": {
+    "sent_map": {
+      "positive": "pos",
+      "neutral": "neu",
+      "negative": "neg"
+    },
+    "tox_pos_labels": [],
+    "emo_neutral_label": "neutral"
+  },
+  "StevenLimcorn/indonesian-roberta-base-emotion-classifier": {
+    "sent_map": {
+      "sadness": "other",
+      "anger": "other",
+      "love": "other",
+      "fear": "other",
+      "happy": "other"
+    },
+    "tox_pos_labels": [],
+    "emo_neutral_label": null
+  },
+  "cardiffnlp/twitter-roberta-base-sentiment-latest": {
+    "sent_map": {
+      "negative": "neg",
+      "neutral": "neu",
+      "positive": "pos"
+    },
+    "tox_pos_labels": [],
+    "emo_neutral_label": "neutral"
+  }
+}

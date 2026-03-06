@@ -1,0 +1,17 @@
+{
+  "chosen": {
+    "sim_thr": 0.6134027435000001,
+    "mar_thr": 0.11749094500000003,
+    "tp": 2.0,
+    "fp": 0.0,
+    "fn": 121.0,
+    "tn": 277.0,
+    "precision": 1.0,
+    "recall": 0.016260162601626018,
+    "coverage": 0.005
+  },
+  "precision_target": 0.85,
+  "use_margin": true,
+  "n_labeled": 400,
+  "grid_q": 41
+}

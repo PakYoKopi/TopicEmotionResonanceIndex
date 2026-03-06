@@ -1,0 +1,230 @@
+{
+  "cardiffnlp/twitter-xlm-roberta-base-sentiment": {
+    "model_id": "cardiffnlp/twitter-xlm-roberta-base-sentiment",
+    "task": "text-classification",
+    "num_labels": 3,
+    "id2label": {
+      "0": "negative",
+      "1": "neutral",
+      "2": "positive"
+    },
+    "label2id": {
+      "negative": "0",
+      "neutral": "1",
+      "positive": "2"
+    },
+    "model_type": "xlm-roberta",
+    "architecture": "XLMRobertaForSequenceClassification",
+    "commit_hash": "f2f1202b1bdeb07342385c3f807f9c07cd8f5cf8"
+  },
+  "AnasAlokla/multilingual_go_emotions_V1.1": {
+    "model_id": "AnasAlokla/multilingual_go_emotions_V1.1",
+    "task": "text-classification",
+    "num_labels": 28,
+    "id2label": {
+      "0": "admiration",
+      "1": "amusement",
+      "2": "anger",
+      "3": "annoyance",
+      "4": "approval",
+      "5": "caring",
+      "6": "confusion",
+      "7": "curiosity",
+      "8": "desire",
+      "9": "disappointment",
+      "10": "disapproval",
+      "11": "disgust",
+      "12": "embarrassment",
+      "13": "excitement",
+      "14": "fear",
+      "15": "gratitude",
+      "16": "grief",
+      "17": "joy",
+      "18": "love",
+      "19": "nervousness",
+      "20": "optimism",
+      "21": "pride",
+      "22": "realization",
+      "23": "relief",
+      "24": "remorse",
+      "25": "sadness",
+      "26": "surprise",
+      "27": "neutral"
+    },
+    "label2id": {
+      "admiration": "0",
+      "amusement": "1",
+      "anger": "2",
+      "annoyance": "3",
+      "approval": "4",
+      "caring": "5",
+      "confusion": "6",
+      "curiosity": "7",
+      "desire": "8",
+      "disappointment": "9",
+      "disapproval": "10",
+      "disgust": "11",
+      "embarrassment": "12",
+      "excitement": "13",
+      "fear": "14",
+      "gratitude": "15",
+      "grief": "16",
+      "joy": "17",
+      "love": "18",
+      "nervousness": "19",
+      "neutral": "27",
+      "optimism": "20",
+      "pride": "21",
+      "realization": "22",
+      "relief": "23",
+      "remorse": "24",
+      "sadness": "25",
+      "surprise": "26"
+    },
+    "model_type": "bert",
+    "architecture": "BertForSequenceClassification",
+    "commit_hash": "1a283ca2f4cadd6bf23a9825a16f8bd0ad504838"
+  },
+  "j-hartmann/emotion-english-distilroberta-base": {
+    "model_id": "j-hartmann/emotion-english-distilroberta-base",
+    "task": "text-classification",
+    "num_labels": 7,
+    "id2label": {
+      "0": "anger",
+      "1": "disgust",
+      "2": "fear",
+      "3": "joy",
+      "4": "neutral",
+      "5": "sadness",
+      "6": "surprise"
+    },
+    "label2id": {
+      "anger": "0",
+      "disgust": "1",
+      "fear": "2",
+      "joy": "3",
+      "neutral": "4",
+      "sadness": "5",
+      "surprise": "6"
+    },
+    "model_type": "roberta",
+    "architecture": "RobertaForSequenceClassification",
+    "commit_hash": "0e1cd914e3d46199ed785853e12b57304e04178b"
+  },
+  "unitary/multilingual-toxic-xlm-roberta": {
+    "model_id": "unitary/multilingual-toxic-xlm-roberta",
+    "task": "text-classification",
+    "num_labels": 1,
+    "id2label": {
+      "0": "toxic"
+    },
+    "label2id": {
+      "toxic": "0"
+    },
+    "model_type": "xlm-roberta",
+    "architecture": "XLMRobertaForSequenceClassification",
+    "commit_hash": "4ad6f5c104d9ce813a1a2f33cac0c5b579ef6ee5"
+  },
+  "unitary/unbiased-toxic-roberta": {
+    "model_id": "unitary/unbiased-toxic-roberta",
+    "task": "text-classification",
+    "num_labels": 16,
+    "id2label": {
+      "0": "toxicity",
+      "1": "severe_toxicity",
+      "2": "obscene",
+      "3": "identity_attack",
+      "4": "insult",
+      "5": "threat",
+      "6": "sexual_explicit",
+      "7": "male",
+      "8": "female",
+      "9": "homosexual_gay_or_lesbian",
+      "10": "christian",
+      "11": "jewish",
+      "12": "muslim",
+      "13": "black",
+      "14": "white",
+      "15": "psychiatric_or_mental_illness"
+    },
+    "label2id": {
+      "toxicity": "0",
+      "severe_toxicity": "1",
+      "christian": "10",
+      "jewish": "11",
+      "muslim": "12",
+      "black": "13",
+      "white": "14",
+      "psychiatric_or_mental_illness": "15",
+      "obscene": "2",
+      "identity_attack": "3",
+      "insult": "4",
+      "threat": "5",
+      "sexual_explicit": "6",
+      "male": "7",
+      "female": "8",
+      "homosexual_gay_or_lesbian": "9"
+    },
+    "model_type": "roberta",
+    "architecture": "RobertaForSequenceClassification",
+    "commit_hash": "36295dd80b422dc49f40052021430dae76241adc"
+  },
+  "w11wo/indonesian-roberta-base-sentiment-classifier": {
+    "model_id": "w11wo/indonesian-roberta-base-sentiment-classifier",
+    "task": "text-classification",
+    "num_labels": 3,
+    "id2label": {
+      "0": "positive",
+      "1": "neutral",
+      "2": "negative"
+    },
+    "label2id": {
+      "negative": "2",
+      "neutral": "1",
+      "positive": "0"
+    },
+    "model_type": "roberta",
+    "architecture": "RobertaForSequenceClassification",
+    "commit_hash": "ac452dcb0f4966130bba44f4ee0013bb5d52c282"
+  },
+  "StevenLimcorn/indonesian-roberta-base-emotion-classifier": {
+    "model_id": "StevenLimcorn/indonesian-roberta-base-emotion-classifier",
+    "task": "text-classification",
+    "num_labels": 5,
+    "id2label": {
+      "0": "sadness",
+      "1": "anger",
+      "2": "love",
+      "3": "fear",
+      "4": "happy"
+    },
+    "label2id": {
+      "anger": "1",
+      "fear": "3",
+      "happy": "4",
+      "love": "2",
+      "sadness": "0"
+    },
+    "model_type": "roberta",
+    "architecture": "RobertaForSequenceClassification",
+    "commit_hash": "1b9a48d88d91856e3e36fc33312b85190aff1a55"
+  },
+  "cardiffnlp/twitter-roberta-base-sentiment-latest": {
+    "model_id": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+    "task": "text-classification",
+    "num_labels": 3,
+    "id2label": {
+      "0": "negative",
+      "1": "neutral",
+      "2": "positive"
+    },
+    "label2id": {
+      "negative": "0",
+      "neutral": "1",
+      "positive": "2"
+    },
+    "model_type": "roberta",
+    "architecture": "RobertaForSequenceClassification",
+    "commit_hash": "3216a57f2a0d9c45a2e6c20157c20c49fb4bf9c7"
+  }
+}
