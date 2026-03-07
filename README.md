@@ -1,79 +1,90 @@
-# TopicEmotionResonanceIndex (TERI)
+# Paper: Measuring Topic Emotion Resonance Through Precision-First Alignment
+## Journal of Social Computing (under review)
 
-> **Topic Emotion Resonance Index** — Sebuah indeks komposit untuk mengukur resonansi emosional komentar YouTube terhadap topik konten video politik.
-
----
-
-## Daftar Isi
-
-- [Gambaran Umum](#gambaran-umum)
-- [Konsep & Formula TERI](#konsep--formula-teri)
-- [Struktur Repositori](#struktur-repositori)
-- [Alur Pipeline](#alur-pipeline)
-- [Model NLP yang Digunakan](#model-nlp-yang-digunakan)
-- [Konfigurasi](#konfigurasi)
-- [Output & Skema Data](#output--skema-data)
-- [Statistik Dataset](#statistik-dataset)
-- [Lingkungan & Dependensi](#lingkungan--dependensi)
+> **Topic Emotion Resonance Index** — A composite index for measuring the emotional resonance of YouTube comments on political video content topics.
 
 ---
 
-## Gambaran Umum
+## Table of Contents
 
-TERI (*Topic Emotion Resonance Index*) adalah sistem analitik berbasis NLP untuk mengukur sejauh mana komentar pada video YouTube politik beresonansi secara emosional dengan topik yang dibahas dalam video. Proyek ini menargetkan dua domain:
-
-- **`indo`** — Video politik Indonesia (komentar berbahasa Indonesia & campuran)
-- **`global`** — Video politik global (komentar berbahasa Inggris & multibahasa)
-
-Pipeline ini mencakup seleksi video, quality-check transkrip, alignment komentar-transkrip, inferensi sentimen/emosi/toksisitas, deteksi perilaku tidak autentik (*Coordinated Inauthentic Behavior* / CIB), dan kalkulasi indeks akhir TERI.
+- [Overview](#overview)
+- [TERI Concept & Formula](#teri-concept--formula)
+- [Repository Structure](#repository-structure)
+- [Pipeline Flow](#pipeline-flow)
+- [NLP Models Used](#nlp-models-used)
+- [Configuration](#configuration)
+- [Output & Data Schema](#output--data-schema)
+- [Dataset Statistics](#dataset-statistics)
+- [Environment & Dependencies](#environment--dependencies)
 
 ---
 
-## Konsep & Formula TERI
+## Overview
 
-TERI dibangun dari tiga komponen utama yang masing-masing dinormalisasi menggunakan **robust z-score** dalam lingkup domain:
+TERI (*Topic Emotion Resonance Index*) is an NLP-based analytical system for measuring the extent to which comments on political YouTube videos resonate emotionally with the topics discussed in the videos. This project targets two domains:
 
-| Komponen | Bobot | Deskripsi |
+- **`indo`** — Indonesian political videos (comments in Indonesian & mixed languages)
+- **`global`** — Global political videos (English & multilingual comments)
+
+This pipeline includes video selection, transcript quality checks, comment-transcript alignment, sentiment/emotion/toxicity inference, detection of coordinated inauthentic behavior (CIB), and calculation of the final TERI index. Here, CIB refers to heuristic indicators of coordinated inauthentic behavior such as duplication bursts, abnormal author concentration, and cross-video reuse.
+
+
+---
+
+## TERI Concept & Formula
+
+TERI is constructed from three main components, each of which is normalized using a **robust z-score** within the domain scope:
+
+| Component | Weight | Description |
 |---|---|---|
-| `tox_comp` | 0.40 | Rata-rata tingkat toksisitas komentar (mean + p90, normalisasi robust-z) |
-| `conflict_comp` | 0.35 | Proksi konflik: rata-rata nilai konflik komentar (mean + p90) |
-| `coupling_comp` | 0.25 | Keterikatan semantik komentar dengan segmen transkrip (cosine similarity) |
+| `tox_comp` | 0.40 | Average comment toxicity level (mean + p90, robust-z normalization) |
+| `conflict_comp` | 0.35 | Conflict proxy: average conflict value of comments (mean + p90) |
+| `coupling_comp` | 0.25 | Semantic coupling of comments with transcript segments (cosine similarity) |
 
 ```
 TERI_core = 0.40 × tox_comp + 0.35 × conflict_comp + 0.25 × coupling_comp
+
+The weighted formulation above represents the operational implementation
+of the TERI interaction concept described in the paper, where affect and
+friction signals jointly contribute to resonance.
 ```
 
-**`TERI_total`** merupakan `TERI_core` yang disesuaikan dengan sinyal *Opinion Resonance* (OR) untuk merefleksikan kelompok komentar beropini kuat. **`TERI_debot`** adalah versi yang telah dikoreksi terhadap estimasi aktivitas bot/CIB.
+TERI_total is TERI_core adjusted with the Opinion Resonance (OR) signal.
 
-### Sub-indeks
+Opinion Resonance (OR) captures clusters of strongly opinionated comments
+that amplify emotional alignment within a discussion thread.
 
-| Kolom | Keterangan |
+In practice, OR is estimated from the upper-tail distribution of polarity
+and emotional intensity among grounded comments..
+
+### Sub-indexes
+
+| Column | Description |
 |---|---|
-| `TERI_core` | Indeks utama sebelum koreksi OR |
-| `TERI_total` | Indeks utama + koreksi OR |
-| `TERI_debot` | Indeks dengan bobot de-bot (koreksi CIB) |
-| `TERI_tox_sub` | Kontribusi komponen toksisitas |
-| `TERI_conflict_sub` | Kontribusi komponen konflik |
-| `TERI_coupling_sub` | Kontribusi komponen coupling |
-
+| `TERI_core` | Main index before OR correction |
+| `TERI_total` | Main index + OR correction |
+| `TERI_debot` | Index with de-bot weight (CIB correction) |
+| `TERI_tox_sub` | Contribution of toxicity component |
+| `TERI_conflict_sub` | Contribution of conflict component |
+| `TERI_coupling_sub` | Contribution of coupling component |
 ---
 
-## Struktur Repositori
+## Repository Structure
 
 ```
 TopicEmotionResonanceIndex/
 │
-├── main_configuration/             # Konfigurasi utama (precision target alignment = 0.85)
-│   ├── config_snapshot.json        # Snapshot lengkap semua parameter run
-│   ├── env_snapshot.json           # Versi Python, PyTorch, CUDA
-│   ├── model_meta.json             # Metadata & label map semua model HuggingFace
-│   ├── model_label_maps.json       # Peta label ke kategori sent/tox/emo
-│   ├── alignment_threshold_chosen.json  # Threshold alignment yang dipilih (kalibrasi)
-│   ├── video_status.csv            # Status setiap video di setiap tahap pipeline
-│   ├── video_level_indices.csv     # Indeks TERI per video (output utama)
-│   └── comment_level_manifest.csv  # Skor per komentar (alignment + sentimen + emosi + toksisitas)
+├── main_configuration/             # Main configuration (precision target alignment = 0.85)
+│   ├── config_snapshot.json        # Complete snapshot of all run parameters
+│   ├── env_snapshot.json           # Python, PyTorch, CUDA versions
+│   ├── model_meta.json             # Metadata & label map of all HuggingFace models
+│   ├── model_label_maps.json       # Label map to sent/tox/emo categories
+│   ├── alignment_threshold_chosen.json  # Selected alignment threshold (calibration)
+│   ├── video_status.csv            # Status of each video at each stage of the pipeline
+│   ├── video_level_indices.csv     # TERI index per video (main output)
+│   └── comment_level_manifest.csv  # Score per comment (alignment + sentiment + emotion + toxicity)
 │
-├── stricter_configuration/         # Konfigurasi lebih ketat (precision alignment = 1.0)
+├── stricter_configuration/         # Stricter configuration (precision alignment = 1.0)
 │   ├── config_snapshot.json
 │   ├── env_snapshot.json
 │   ├── model_meta.json
@@ -85,236 +96,233 @@ TopicEmotionResonanceIndex/
 │
 └── README.md
 ```
-
 ---
 
-## Alur Pipeline
+## Pipeline Flow
 
 ```
-Kandidat Video
+Video Candidates
       │
       ▼
-1. SELEKSI VIDEO
-   Stratifikasi berdasarkan tahun & tier komentar
-   Target: 200 video/domain
+1. Candidate discovery pool before eligibility filtering.
+   300 videos (200 Indonesian Domain, 100 Global Domain)
       │
       ▼
 2. TOPIC SCREENING
-   Embedding chunk transkrip vs. video lain untuk memfilter
-   video off-topic (precision target: 0.90)
+   Embedding transcript chunks vs. other videos to filter
+   off-topic videos (precision target: 0.90)
       │
       ▼
 3. TRANSCRIPT QC
-   Filter transkrip berkualitas rendah:
-   - Min token: 80, Min segmen: 5
-   - Min rasio alfa: 0.45
-   - Max rasio token berulang: 0.35
+   Filter low-quality transcripts:
+   - Min tokens: 80, Min segments: 5
+   - Min alpha ratio: 0.45
+   - Max repeated token ratio: 0.35
       │
       ▼
 4. CHUNK QC
-   Segmentasi transkrip menjadi chunk ~180 token
-   (range: 120–220 token)
+   Segment transcripts into chunks of ~180 tokens
+   (range: 120–220 tokens)
       │
       ▼
-5. ALIGNMENT KOMENTAR-TRANSKRIP
+5. COMMENT-TRANSCRIPT ALIGNMENT
    Model: paraphrase-multilingual-MiniLM-L12-v2
-   Kalibrasi threshold cosine similarity (precision ≥ 0.85)
-   Top-K=2 chunk terdekat per komentar
+   Calibrate cosine similarity threshold (precision ≥ 0.85)
+   Top-K=2 closest chunks per comment
       │
       ▼
-6. AFFECT SCORING (Inferensi NLP)
-   - Sentimen: positif / netral / negatif
-   - Emosi: 5–28 kelas per model
-   - Toksisitas: skor kontinu (single/multi-label)
-   Routing model berdasarkan bahasa komentar
+6. AFFECT SCORING (NLP Inference)
+   - Sentiment: positive / neutral / negative
+   - Emotion: 5–28 classes per model
+   - Toxicity: continuous score (single/multi-label)
+   Routing model based on comment language
       │
       ▼
 7. CIB DETECTION
-   Deteksi komentar duplikat, burst aktivitas,
-   konsentrasi author, dan reuse lintas-video
+   Detection of duplicate comments, bursts of activity,
+   author concentration, and cross-video reuse
       │
       ▼
 8. TERI COMPUTATION
-   Normalisasi robust-z per domain
-   Agregasi mean + p90 → TERI_core → TERI_total → TERI_debot
+   Robust-z normalization per domain
+   Mean + p90 aggregation → TERI_core → TERI_total → TERI_debot
 ```
-
 ---
 
-## Model NLP yang Digunakan
+## NLP Models Used
 
-| Role | Model | Bahasa |
+| Role | Model | Language |
 |---|---|---|
-| **Similarity (Alignment)** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Multibahasa |
-| **Sentimen (Indonesia)** | `w11wo/indonesian-roberta-base-sentiment-classifier` | Indonesia |
-| **Sentimen (Inggris)** | `cardiffnlp/twitter-roberta-base-sentiment-latest` | Inggris |
-| **Sentimen (Multibahasa)** | `cardiffnlp/twitter-xlm-roberta-base-sentiment` | Multibahasa |
-| **Emosi (Indonesia)** | `StevenLimcorn/indonesian-roberta-base-emotion-classifier` | Indonesia (5 kelas) |
-| **Emosi (Inggris)** | `j-hartmann/emotion-english-distilroberta-base` | Inggris (7 kelas) |
-| **Emosi (Multibahasa)** | `AnasAlokla/multilingual_go_emotions_V1.1` | Multibahasa (28 kelas) |
-| **Toksisitas (Inggris)** | `unitary/unbiased-toxic-roberta` | Inggris (16 label) |
-| **Toksisitas (Multibahasa)** | `unitary/multilingual-toxic-xlm-roberta` | Multibahasa |
+| **Similarity (Alignment)** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Multilingual |
+| **Sentiment (Indonesian)** | `w11wo/indonesian-roberta-base-sentiment-classifier` | Indonesian |
+| **Sentiment (English)** | `cardiffnlp/twitter-roberta-base-sentiment-latest` | English |
+| **Sentiment (Multilingual)** | `cardiffnlp/twitter-xlm-roberta-base-sentiment` | Multilingual |
+| **Emotion (Indonesian)** | `StevenLimcorn/indonesian-roberta-base-emotion-classifier` | Indonesian (5 classes) |
+| **Emotion (English)** | `j-hartmann/emotion-english-distilroberta-base` | English (7 classes) |
+| **Emotion (Multilingual)** | `AnasAlokla/multilingual_go_emotions_V1.1` | Multilingual (28 classes) |
+| **Toxicity (English)** | `unitary/unbiased-toxic-roberta` | English (16 labels) |
+| **Toxicity (Multilingual)** | `unitary/multilingual-toxic-xlm-roberta` | Multilingual |
 
-Routing model dilakukan per komentar berdasarkan deteksi bahasa (`lang_bucket`): `id` → model Indonesia, `en` → model Inggris, `other` → model multibahasa.
+Model routing is done per comment based on language detection (`lang_bucket`): `id` → Indonesian model, `en` → English model, `other` → multilingual model.
 
 ---
 
-## Konfigurasi
+## Configuration
 
-Repositori ini menyertakan dua set hasil run dengan konfigurasi berbeda:
+This repository includes two sets of run results with different configurations:
 
 ### `main_configuration`
 - **Alignment precision target**: 0.85
-- **Threshold kalibrasi**: `sim_thr = 0.608`, `mar_thr = 0.017`
-- **Precision aktual**: 0.857, **Recall**: 0.053, **Coverage**: 1.75%
-- **Jumlah video lolos**: 51 (49 indo, 2 global)
-- **Jumlah komentar ter-align**: 12.719
+- **Calibration threshold**: `sim_thr = 0.608`, `mar_thr = 0.017`
+- **Actual precision**: 0.857, **Recall**: 0.053, **Coverage**: 1.75%
+- **Number of videos passed**: 51 (49 Indonesian, 2 global)
+- **Number of aligned comments: 12,719
 
 ### `stricter_configuration`
-- **Alignment precision target**: 0.85 (namun threshold lebih ketat)
-- **Threshold kalibrasi**: `sim_thr = 0.613`, `mar_thr = 0.117`
-- **Precision aktual**: 1.0, **Recall**: 0.016, **Coverage**: 0.5%
-- **Jumlah video lolos**: 33 (semua indo)
-- **Jumlah komentar ter-align**: 3.056
+- **Alignment precision target: 0.85 (but with a stricter threshold)
+- **Calibration threshold: `sim_thr = 0.613`, `mar_thr = 0.117`
+- **Actual precision**: 1.0, **Recall**: 0.016, **Coverage**: 0.5%
+- **Number of videos passed**: 33 (all Indonesian)
+- **Number of aligned comments**: 3,056
 
-> **Catatan**: Konfigurasi yang lebih ketat menghasilkan coverage yang jauh lebih rendah (0.5% vs 1.75%) namun presisi alignment sempurna (1.0).
+> **Note**: A stricter configuration results in significantly lower coverage (0.5% vs. 1.75%) but perfect alignment precision (1.0).
 
-### Parameter Utama
+### Main Parameters
 
-| Parameter | Nilai | Keterangan |
+| Parameter | Value | Description |
 |---|---|---|
-| `SEED` | 42 | Random seed global |
-| `MAX_LEN` | 512 | Panjang maksimum token input model |
-| `BATCH_SIZE` | 32 | Ukuran batch inferensi |
-| `CAP_PER_VIDEO` | 5000 | Maksimum komentar per video |
-| `MIN_PER_VIDEO` | 50 | Minimum komentar per video |
-| `SAMPLE_MODE` | time_stratified | Mode sampling komentar |
-| `TERI.NORM_METHOD` | robust_z | Metode normalisasi indeks |
-| `TERI.AGG_MODE` | mean_p90 | Mode agregasi (rata-rata + persentil 90) |
-| `TERI.TOP_FRAC` | 0.1 | Fraksi top video untuk ranking |
+| `SEED` | 42 | Global random seed |
+| `MAX_LEN` | 512 | Maximum length of model input tokens |
+| `BATCH_SIZE` | 32 | Inference batch size |
+| `CAP_PER_VIDEO` | 5000 | Maximum comments per video |
+| `MIN_PER_VIDEO` | 50 | Minimum comments per video |
+| `SAMPLE_MODE` | time_stratified | Comment sampling mode |
+| `TERI.NORM_METHOD` | robust_z | Index normalization method |
+| `TERI.AGG_MODE` | mean_p90 | Aggregation mode (mean + 90th percentile) |
+| `TERI.TOP_FRAC` | 0.1 | Top video fraction for ranking |
 
 ---
 
-## Output & Skema Data
+## Output & Data Schema
 
 ### `video_level_indices.csv`
 
-File utama yang berisi skor TERI per video.
+The main file containing TERI scores per video.
 
-| Kolom | Tipe | Keterangan |
+| Column | Type | Description |
 |---|---|---|
-| `domain` | str | `indo` atau `global` |
-| `videoId` | str | ID video YouTube |
-| `n` | int | Jumlah komentar yang diproses |
-| `tox_mean` | float | Rata-rata skor toksisitas |
-| `tox_p90` | float | Persentil 90 skor toksisitas |
-| `tox_top10` | float | Rata-rata toksisitas 10% teratas |
-| `coupling_mean` | float | Rata-rata skor coupling (cosine sim) |
-| `coupling_p90` | float | Persentil 90 skor coupling |
-| `valence_mean` | float | Rata-rata valensi sentimen |
-| `polarity_mean` | float | Rata-rata polaritas sentimen |
-| `conflict_mean` | float | Rata-rata proksi konflik |
-| `conflict_p90` | float | Persentil 90 proksi konflik |
-| `neg_rate` | float | Proporsi komentar negatif |
-| `pos_rate` | float | Proporsi komentar positif |
-| `polarization` | float | Tingkat polarisasi sentimen |
-| `TERI_core` | float | Indeks TERI utama |
-| `TERI_total` | float | TERI + koreksi Opinion Resonance |
-| `TERI_debot` | float | TERI terkoreksi CIB/bot |
-| `TERI_tox_sub` | float | Sub-skor kontribusi toksisitas |
-| `TERI_conflict_sub` | float | Sub-skor kontribusi konflik |
-| `TERI_coupling_sub` | float | Sub-skor kontribusi coupling |
-| `or_share` | float | Proporsi komentar Opinion Resonance |
-| `or_score_p90` | float | Skor OR persentil 90 |
-| `cib_risk` | float | Risiko Coordinated Inauthentic Behavior |
-| `flags` | str | Label flag (mis. `burst`) |
-| `suspected_frac` | float | Fraksi komentar yang dicurigai bot |
-| `rank_core` / `rank_total` / `rank_debot` / `rank_cib` | float | Peringkat video per metrik |
+| `domain` | str | `indo` or `global` |
+| `videoId` | str | YouTube video ID |
+| `n` | int | Number of comments processed |
+| `tox_mean` | float | Average toxicity score |
+| `tox_p90` | float | 90th percentile of toxicity score |
+| `tox_top10` | float | Average toxicity of top 10% |
+| `coupling_mean` | float | Average coupling score (cosine similarity) |
+| `coupling_p90` | float | 90th percentile of coupling score |
+| `valence_mean` | float | Average sentiment valence |
+| `polarity_mean` | float | Average sentiment polarity |
+| `conflict_mean` | float | Average conflict proxy |
+| `conflict_p90` | float | 90th percentile conflict proxy |
+| `neg_rate` | float | Proportion of negative comments |
+| `pos_rate` | float | Proportion of positive comments |
+| `polarization` | float | Sentiment polarization level |
+| `TERI_core` | float | Main TERI index |
+| `TERI_total` | float | TERI + Opinion Resonance correction |
+| `TERI_debot` | float | CIB/bot-corrected TERI |
+| `TERI_tox_sub` | float | Sub-score for toxicity contribution |
+| `TERI_conflict_sub` | float | Sub-score for conflict contribution |
+| `TERI_coupling_sub` | float | Sub-score for coupling contribution |
+| `or_share` | float | Proportion of Opinion Resonance comments |
+| `or_score_p90` | float | OR score percentile 90 |
+| `cib_risk` | float | Coordinated Inauthentic Behavior risk |
+| `flags` | str | Flag label (e.g., `burst`) |
+| `suspected_frac` | float | Fraction of comments suspected to be bots |
+| `rank_core` / `rank_total` / `rank_debot` / `rank_cib` | float | Video rank per metric |
 
 ### `comment_level_manifest.csv`
 
-File skor per komentar yang telah di-align dan dinilai.
+File of scores per comment that has been aligned and evaluated.
 
-| Kolom | Tipe | Keterangan |
+| Column | Type | Description |
 |---|---|---|
-| `domain` | str | Domain video |
-| `videoId` | str | ID video |
-| `commentId` | str | ID komentar YouTube |
-| `lang_bucket` | str | Bucket bahasa: `id`, `en`, `other` |
-| `lang_conf` | float | Confidence deteksi bahasa |
-| `sim_top1_align` | float | Cosine similarity ke chunk terdekat |
-| `sim_margin_align` | float | Margin antara top-1 dan top-2 similarity |
-| `aligned_keep` | bool | Apakah komentar lolos threshold alignment |
-| `sent_model_id` | str | Model sentimen yang digunakan |
-| `emo_model_id` | str | Model emosi yang digunakan |
-| `tox_model_id` | str | Model toksisitas yang digunakan |
-| `sent_top_label` | str | Label sentimen dominan |
-| `sent_top_score` | float | Skor sentimen dominan |
-| `tox_score` | float | Skor toksisitas agregat |
-| `tox_top_label` | str | Label toksisitas dominan |
-| `emo_top_label` | str | Label emosi dominan |
-| `emo_top_score` | float | Skor emosi dominan |
-| `emo_entropy` | float | Entropi distribusi emosi |
-| `valence` | float | Valensi sentimen komentar |
-| `polarity` | float | Polaritas sentimen komentar |
-| `coupling_sim` | float | Skor coupling cosine similarity |
-| `coupling_margin` | float | Margin coupling |
-| `conflict_proxy` | float | Proksi konflik komentar |
-| `sarcasm_like` | int | Flag komentar bersifat sarkasme |
-| `weight_sarcasm` | float | Bobot setelah koreksi sarkasme |
+| `domain` | str | Video domain |
+| `videoId` | str | Video ID |
+| `commentId` | str | YouTube comment ID |
+| `lang_bucket` | str | Language bucket: `id`, `en`, `other` |
+| `lang_conf` | float | Language detection confidence |
+| `sim_top1_align` | float | Cosine similarity to closest chunk |
+| `sim_margin_align` | float | Margin between top-1 and top-2 similarity |
+| `aligned_keep` | bool | Whether the comment passes the alignment threshold |
+| `sent_model_id` | str | Sentiment model used |
+| `emo_model_id` | str | Emotion model used |
+| `tox_model_id` | str | Toxicity model used |
+| `sent_top_label` | str | Dominant sentiment label |
+| `sent_top_score` | float | Dominant sentiment score |
+| `tox_score` | float | Aggregate toxicity score |
+| `tox_top_label` | str | Dominant toxicity label |
+| `emo_top_label` | str | Dominant emotion label |
+| `emo_top_score` | float | Dominant emotion score |
+| `emo_entropy` | float | Emotion distribution entropy |
+| `valence` | float | Comment sentiment valence |
+| `polarity` | float | Comment sentiment polarity |
+| `coupling_sim` | float | Cosine similarity coupling score |
+| `coupling_margin` | float | Coupling margin |
+| `conflict_proxy` | float | Comment conflict proxy |
+| `sarcasm_like` | int | Sarcasm comment flag |
+| `weight_sarcasm` | float | Weight after sarcasm correction |
 
 ### `video_status.csv`
 
-Melacak status setiap video di setiap tahap pipeline.
+Track the status of each video at every stage of the pipeline.
 
-| Kolom | Keterangan |
+| Column | Description |
 |---|---|
-| `domain` | Domain video |
-| `videoId` | ID video YouTube |
-| `stage` | Tahap pipeline: `topic_screened`, `transcript_qc`, `chunk_qc`, `alignment_screened`, `affect_scored` |
-| `status` | `ok` (lolos) atau `skip` (dilewati/dibuang) |
-| `reason` | Alasan skip (mis. `topic_off_by_threshold`) |
-| `n_ok_chunks` | Jumlah chunk yang lolos QC |
+| `domain` | Video domain |
+| `videoId` | YouTube video ID |
+| `stage` | Pipeline stage: `topic_screened`, `transcript_qc`, `chunk_qc`, `alignment_screened`, `affect_scored` |
+| `status` | `ok` (passed) or `skip` (skipped/discarded) |
+| `reason` | Reason for skip (e.g., `topic_off_by_threshold`) |
+| `n_ok_chunks` | Number of chunks that passed QC |
 
 ---
 
-## Statistik Dataset
+## Dataset Statistics
 
-### Konfigurasi Utama (`main_configuration`)
+### Main Configuration (`main_configuration`)
 
-| Metrik | Nilai |
+| Metric | Value |
 |---|---|
-| Total video diproses | 300 |
-| Video lolos pipeline | 51 (17%) |
-| Video domain `indo` | 49 |
-| Video domain `global` | 2 |
-| Total komentar ter-align | 12.719 |
-| Komentar bahasa Indonesia (`id`) | 9.063 (71.3%) |
-| Komentar bahasa Inggris (`en`) | 965 (7.6%) |
-| Komentar bahasa lain (`other`) | 2.691 (21.2%) |
-| TERI_total rata-rata | −0.140 |
-| TERI_total min / maks | −2.433 / 2.041 |
+| Total videos processed | 300 |
+| Videos passed pipeline | 51 (17%) |
+| Videos in `indo` domain | 49 |
+| Videos in `global` domain | 2 |
+| Total aligned comments | 12,719 |
+| Indonesian language comments (`id`) | 9,063 (71.3%) |
+| English language comments (`en`) | 965 (7.6%) |
+| Other language comments (`other`) | 2,691 (21.2%) |
+| TERI_total average | −0.140 |
+| TERI_total min / max | −2.433 / 2.041 |
 
-### Konfigurasi Lebih Ketat (`stricter_configuration`)
+### Stricter Configuration (`stricter_configuration`)
 
-| Metrik | Nilai |
+| Metric | Value |
 |---|---|
-| Total video diproses | 300 |
-| Video lolos pipeline | 33 (11%) |
-| Video domain `indo` | 33 |
-| Video domain `global` | 0 |
-| Total komentar ter-align | 3.056 |
-| Komentar bahasa Indonesia (`id`) | 2.123 (69.5%) |
-| Komentar bahasa lain (`other`) | 854 (28.0%) |
-| Komentar bahasa Inggris (`en`) | 79 (2.6%) |
+| Total videos processed | 300 |
+| Videos that passed the pipeline | 33 (11%) |
+| Videos in the `indo` domain | 33 |
+| Videos in the `global` domain | 0 |
+| Total aligned comments | 3,056 |
+| Indonesian language comments (`id`) | 2,123 (69.5%) |
+| Other language comments (`other`) | 854 (28.0%) |
+| English language comments (`en`) | 79 (2.6%) |
 
 ---
 
-## Lingkungan & Dependensi
+## Environment & Dependencies
 
-Berdasarkan `env_snapshot.json`:
+Based on `env_snapshot.json`:
 
-| Komponen | Versi |
+| Component | Version |
 |---|---|
 | Python | 3.12.12 |
 | PyTorch | 2.9.0+cu128 |
@@ -322,4 +330,12 @@ Berdasarkan `env_snapshot.json`:
 | CUDA | 12.8 |
 | Platform | Linux x86_64 (Google Colab / Drive) |
 
-Pipeline dijalankan di lingkungan **Google Colab** dengan akses GPU (CUDA), menggunakan Google Drive sebagai storage untuk dataset, cache model, dan output.
+The pipeline is run in a **Google Colab** environment with GPU (CUDA) access, using Google Drive as storage for the dataset, model cache, and output.
+<!-- 
+## Citation
+If you use TERI in your research, please cite:
+Yulianto, S. P. R., et al. (2026).
+Topic Emotion Resonance Index (TERI) for Indonesian YouTube Discourse.
+
+### License: CC BY-NC 4.0
+### Creative Commons Attribution-NonCommercial 4.0
